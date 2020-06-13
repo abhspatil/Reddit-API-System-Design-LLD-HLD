@@ -1,0 +1,85 @@
+
+version: '3'
+services:
+  # docker-mysql:
+  #   restart: always
+  #   container_name: docker-mysql
+  #   image: mysql:5.7.10
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: reddit
+  #     MYSQL_USER: root
+  #     MYSQL_PASSWORD: pass123
+  #     MYSQL_ROOT_HOST: '%'
+  #   volumes:
+  #     - ./sql:/docker-entrypoint-initdb.d
+  #   ports:
+  #     - "3306:3306"
+  #   healthcheck:
+  #     test: "/usr/bin/mysql --user=root --password=root--execute \"SHOW DATABASES;\""
+  #     interval: 2s
+  #     timeout: 20s
+  #     retries: 10
+
+  user-service:
+    restart: on-failure
+    build: user-service/.
+    expose:
+      - "8081"
+    ports:
+      - 8081:8081
+    environment:
+      WAIT_HOSTS: mysql:3306
+    depends_on:
+      - eureka-service
+
+  posts-service:
+    restart: on-failure
+    build: post-service/.
+    expose:
+      - "8082"
+    ports:
+      - 8082:8082
+    environment:
+      WAIT_HOSTS: mysql:3306
+    depends_on:
+      - eureka-service
+
+  likes-comments-service:
+    restart: on-failure
+    build: likes-comments-service/.
+    expose:
+      - "8083"
+    ports:
+      - 8083:8083
+    environment:
+      WAIT_HOSTS: mysql:3306
+    depends_on:
+      - eureka-service
+
+
+  eureka-service:
+    restart: on-failure
+    build: eureka-service/.
+    expose:
+      - "8090"
+    ports:
+      - 8090:8090
+    environment:
+      WAIT_HOSTS: mysql:3306 
+  
+  api-service:
+    restart: on-failure
+    build: api-service/.
+    expose:
+      - "8080"
+    ports:
+      - 8080:8080
+    environment:
+      WAIT_HOSTS: mysql:3306
+    depends_on:
+      - likes-comments-service
+      - posts-service
+      - user-service
+      - eureka-service
+

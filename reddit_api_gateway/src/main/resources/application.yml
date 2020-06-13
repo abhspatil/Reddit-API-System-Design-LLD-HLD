@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: eureka-service
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    server:
+      waitTimeInMsWhenSyncEmpty: 0
+
+zuul:
+  #Service will be mapped under the /api URI
+  prefix: /
+  routes:
+    user-service:
+      path: /users-servce/**
+      url: http://localhost:8081
+    posts-service:
+      path: /posts-service/**
+      url: http://localhost:8082
+    likes-service:
+      path: /likes-service/**
+      url: http://localhost:8083

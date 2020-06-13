@@ -1,0 +1,33 @@
+
+spring:
+  application:
+    name: api-service
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8090/eureka/
+  instance:
+    hostname: localhost
+
+zuul:
+  #Service will be mapped under the /api URI
+  prefix: /api
+  routes:
+    user-service:
+      path: /users/**
+      url: http://localhost:8081
+    posts-service:
+      path: /posts/**
+      url: http://localhost:8082
+    likes-service:
+      path: /likes/**
+      url: http://localhost:8083
+    comments-service:
+      path: /comments/**
+      url: http://localhost:8083
